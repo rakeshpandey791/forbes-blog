@@ -1,10 +1,13 @@
-import {GET_BLOG_LIST, UPDATE_LIMIT, UPDATE_TOTAL_BLOG_COUNT, GET_SELECTED_BLOG} from "../actionConstant";
+import {GET_BLOG_LIST, UPDATE_LIMIT, UPDATE_TOTAL_BLOG_COUNT, GET_SELECTED_BLOG,
+    SET_AUTHOR_FILTER, SET_CATEGORY_FILTER} from "../actionConstant";
 
 const initialState = {
     blogList: [],
     authorList: [],
     categoryList: [],
     slectedBlog: {},
+    selectedAuthor: '',
+    selectedCategory: '',
     limit: 4,
     totalBlogs: 0,
     lStorageBlogs: JSON.parse(localStorage.getItem('blogList'))
@@ -40,6 +43,17 @@ const blogReducer = (state = initialState, action) => {
                 slectedBlog: action.payload
             }
 
+        case SET_AUTHOR_FILTER:
+            return {
+                ...state,
+                selectedAuthor: action.payload
+            }
+
+        case SET_CATEGORY_FILTER:
+            return {
+                ...state,
+                selectedCategory: action.payload
+            }
 
         default:
             return newState;

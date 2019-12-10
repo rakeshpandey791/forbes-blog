@@ -1,21 +1,31 @@
-import {GET_BLOG_LIST, UPDATE_LIMIT, UPDATE_TOTAL_BLOG_COUNT, GET_SELECTED_BLOG} from "../actionConstant";
+import {GET_BLOG_LIST, UPDATE_LIMIT, UPDATE_TOTAL_BLOG_COUNT,
+    GET_SELECTED_BLOG, SET_AUTHOR_FILTER, SET_CATEGORY_FILTER} from "../actionConstant";
 import blogs from './../blogs';
 
-const getAuthorCategoryList = (blogList) => {
+const getAuthorCategoryList = (blogReducerData) => {
     const retObj = {
         authorList: [],
-        categoryList: []
+        categoryList: [],
+        blogList: blogReducerData.lStorageBlogs
     }
-
-    for(let i=0; i<blogList.length; i++) {
-        if (retObj.authorList.indexOf(blogList[i].author) < 0) {
-            retObj.authorList.push(blogList[i].author);
+    for(let i=0; i<retObj.blogList.length; i++) {
+        if (retObj.authorList.indexOf(retObj.blogList[i].author) < 0) {
+            retObj.authorList.push(retObj.blogList[i].author);
         }
 
-        if (retObj.categoryList.indexOf(blogList[i].category) < 0) {
-            retObj.categoryList.push(blogList[i].category);
+        if (retObj.categoryList.indexOf(retObj.blogList[i].category) < 0) {
+            retObj.categoryList.push(retObj.blogList[i].category);
         }
     }
+
+    if (blogReducerData.selectedAuthor) {
+        retObj.blogList = retObj.blogList.filter(obj => obj.author === blogReducerData.selectedAuthor);
+    }
+
+    if (blogReducerData.selectedCategory) {
+        retObj.blogList = retObj.blogList.filter(obj => obj.category === blogReducerData.selectedCategory);
+    }
+    retObj.blogList = retObj.blogList.slice(0, blogReducerData.limit);
 
     return retObj;
 }
@@ -33,21 +43,33 @@ export const getBlogList = (id) => {
             }
             localStorage.setItem('blogList', JSON.stringify(dataToUpdateLocalStorage));
         }
-
-
-
         const blogReducerData = getState().blogReducer;
         dispatch({type: UPDATE_TOTAL_BLOG_COUNT, payload: blogReducerData.lStorageBlogs.length});
-        let blogList = blogReducerData.lStorageBlogs.slice(0, blogReducerData.limit);
-        if (id) {
-            const blogIndex = blogList.findIndex(blog => blog.id === parseInt(id))
-            blogList = blogList.splice(blogIndex, 1);
-        }
 
-        const authorCategoryList = getAuthorCategoryList(blogReducerData.lStorageBlogs);
+        const authorCategoryList = getAuthorCategoryList(blogReducerData);
 
         dispatch({type: GET_BLOG_LIST,
-            payload: {blogList: blogList, authorList: authorCategoryList.authorList, categoryList: authorCategoryList.categoryList}});
+            payload: {blogList: authorCategoryList.blogList, authorList: authorCategoryList.authorList, categoryList: authorCategoryList.categoryList}});
+    }
+}
+
+export const filterByAuthor = (event) => {
+    return (dispatch, getState) => {
+        dispatch({type: SET_AUTHOR_FILTER, payload: event.target.value});
+        const blogReducerData = getState().blogReducer;
+        const authorCategoryList = getAuthorCategoryList(blogReducerData);
+        dispatch({type: GET_BLOG_LIST,
+            payload: {blogList: authorCategoryList.blogList, authorList: authorCategoryList.authorList, categoryList: authorCategoryList.categoryList}});
+    }
+}
+
+export const filterByCategory = (event) => {
+    return (dispatch, getState) => {
+        dispatch({type: SET_CATEGORY_FILTER, payload: event.target.value});
+        const blogReducerData = getState().blogReducer;
+        const authorCategoryList = getAuthorCategoryList(blogReducerData);
+        dispatch({type: GET_BLOG_LIST,
+            payload: {blogList: authorCategoryList.blogList, authorList: authorCategoryList.authorList, categoryList: authorCategoryList.categoryList}});
     }
 }
 
@@ -57,7 +79,7 @@ export const updateLimit = (id) => {
         const blogReducerData = getState().blogReducer;
         let blogList = blogReducerData.lStorageBlogs.slice(0, getState().blogReducer.limit);
 
-        const authorCategoryList = getAuthorCategoryList(blogReducerData.lStorageBlogs);
+        const authorCategoryList = getAuthorCategoryList(blogReducerData);
 
         dispatch({type: GET_BLOG_LIST,
             payload: {blogList: blogList, authorList: authorCategoryList.authorList, categoryList: authorCategoryList.categoryList}});
@@ -73,12 +95,10 @@ export const likeBlog = (id) => {
             }
         }
         localStorage.setItem('blogList', JSON.stringify(blogReducerData.lStorageBlogs));
-        let blogList = blogReducerData.lStorageBlogs.slice(0, blogReducerData.limit);
-
-        const authorCategoryList = getAuthorCategoryList(blogReducerData.lStorageBlogs);
+        const authorCategoryList = getAuthorCategoryList(blogReducerData);
 
         dispatch({type: GET_BLOG_LIST,
-            payload: {blogList: blogList, authorList: authorCategoryList.authorList, categoryList: authorCategoryList.categoryList}});
+            payload: {blogList: authorCategoryList.blogList, authorList: authorCategoryList.authorList, categoryList: authorCategoryList.categoryList}});
     }
 }
 

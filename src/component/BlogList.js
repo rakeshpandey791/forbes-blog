@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { withRouter } from "react-router-dom";
 import {connect} from "react-redux";
 import {Redirect} from 'react-router-dom';
-import {getBlogList, updateLimit, likeBlog} from "../store/action/blogAction";
+import {getBlogList, updateLimit, likeBlog, filterByAuthor, filterByCategory} from "../store/action/blogAction";
 
 class BlogList extends Component {
     constructor() {
@@ -37,18 +37,20 @@ class BlogList extends Component {
                         <div className="filter-box">
                             <div><h3 className="heading">Blog</h3></div>
                             <div className="pt-5">
-                                <select>
-                                    <option>Select Author</option>
+                                <select onChange={this.props.filterByAuthor}>
+                                    <option value="">Select Author</option>
                                     {
-                                        this.props.authorList.map( author => <option key={author} value={author}>{author}</option>)
+                                        this.props.authorList.map( author => <option selected={author === this.props.selectedAuthor}
+                                                                                     key={author} value={author}>{author}</option>)
                                     }
                                 </select>
                             </div>
                             <div className="pt-5">
-                                <select>
-                                    <option>Select Category</option>
+                                <select onChange={this.props.filterByCategory}>
+                                    <option value="">Select Category</option>
                                     {
-                                        this.props.categoryList.map( category => <option key={category} value={category}>{category}</option>)
+                                        this.props.categoryList.map( category => <option selected={category === this.props.selectedCategory}
+                                                                                         key={category} value={category}>{category}</option>)
                                     }
                                 </select>
                             </div>
@@ -62,6 +64,7 @@ class BlogList extends Component {
                 <div className="list-container">
                     <div onClick={this.navigateToBlogDetail}>
                         {
+                            this.props.blogList.length > 0 ? (
                             this.props.blogList.map( (blog, index)=> {
                                 return (
                                     <div className="list-item" data-id={blog.id} key={index}>
@@ -89,11 +92,12 @@ class BlogList extends Component {
                                     </div>
                                 )
                             })
+                            ) : (<div className="pt-5" align="center"><h3>No record match</h3></div>)
                         }
 
 
                         {
-                            !this.props.isDetails ? (
+                            !this.props.isDetails && this.props.blogList.length > 0 ? (
                                 <div align="center" className="mt-2">
                                     <a  className={disableClass} onClick={this.props.updateLimit}>More Articles</a>
                                 </div>
@@ -114,6 +118,8 @@ const mapPropsToDispatch = (state) => {
         blogList: state.blogReducer.blogList,
         categoryList: state.blogReducer.categoryList,
         authorList: state.blogReducer.authorList,
+        selectedAuthor: state.blogReducer.selectedAuthor,
+        selectedCategory: state.blogReducer.selectedCategory,
         limit: state.blogReducer.limit,
         totalBlogs: state.blogReducer.totalBlogs
     }
@@ -123,7 +129,9 @@ const mapActionToDispatch = (dispatch) => {
     return {
         getBlogList: (id) => dispatch(getBlogList(id)),
         updateLimit: () => dispatch(updateLimit()),
-        likeBlog: (id) => dispatch(likeBlog(id))
+        likeBlog: (id) => dispatch(likeBlog(id)),
+        filterByAuthor: (event) => dispatch(filterByAuthor(event)),
+        filterByCategory: (event) => dispatch(filterByCategory(event)),
     }
 }
 
