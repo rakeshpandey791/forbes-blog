@@ -36,23 +36,23 @@ class BlogList extends Component {
                     !this.props.isDetails ? (
                         <div className="filter-box">
                             <div><h3 className="heading">Blog</h3></div>
-                            <div>
+                            <div className="pt-5">
                                 <select>
                                     <option>Select Author</option>
                                     {
-                                        this.props.authorList.map( author => <option value={author}>{author}</option>)
+                                        this.props.authorList.map( author => <option key={author} value={author}>{author}</option>)
                                     }
                                 </select>
                             </div>
-                            <div>
+                            <div className="pt-5">
                                 <select>
                                     <option>Select Category</option>
                                     {
-                                        this.props.categoryList.map( category => <option value={category}>{category}</option>)
+                                        this.props.categoryList.map( category => <option key={category} value={category}>{category}</option>)
                                     }
                                 </select>
                             </div>
-                            <div>Sort by</div>
+                            {/*<div>Sort by</div>*/}
 
                         </div>
 
@@ -95,7 +95,7 @@ class BlogList extends Component {
                         {
                             !this.props.isDetails ? (
                                 <div align="center" className="mt-2">
-                                    <a href="javascript:void (0)" className={disableClass} onClick={this.props.updateLimit}>More Articles</a>
+                                    <a  className={disableClass} onClick={this.props.updateLimit}>More Articles</a>
                                 </div>
                             ) : ''
                         }

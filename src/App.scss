@@ -80,6 +80,10 @@ $base-font: 15px;
   margin-top: 2%;
 }
 
+.pt-5 {
+  padding-top: 5%;
+}
+
 .disabled {
   border: 1px solid #999999;
   background-color: #cccccc !important;
@@ -92,6 +96,12 @@ $base-font: 15px;
 // Blog Detail Styles Start
 
 .container {
+  .heading {
+    color: $orange;
+    border-top: 2px solid $orange;
+    border-bottom: 1px solid $orange;
+    padding: 1%;
+  }
   padding: 1%;
   .back-heading {
     display: grid;

@@ -51,12 +51,16 @@ export const getBlogList = (id) => {
     }
 }
 
-export const updateLimit = () => {
+export const updateLimit = (id) => {
     return (dispatch, getState) => {
         dispatch({type: UPDATE_LIMIT});
         const blogReducerData = getState().blogReducer;
-        const blogList = blogReducerData.lStorageBlogs.slice(0, getState().blogReducer.limit);
-        dispatch({type: GET_BLOG_LIST, payload: blogList});
+        let blogList = blogReducerData.lStorageBlogs.slice(0, getState().blogReducer.limit);
+
+        const authorCategoryList = getAuthorCategoryList(blogReducerData.lStorageBlogs);
+
+        dispatch({type: GET_BLOG_LIST,
+            payload: {blogList: blogList, authorList: authorCategoryList.authorList, categoryList: authorCategoryList.categoryList}});
     }
 }
 
@@ -69,8 +73,12 @@ export const likeBlog = (id) => {
             }
         }
         localStorage.setItem('blogList', JSON.stringify(blogReducerData.lStorageBlogs));
-        const blogList = blogReducerData.lStorageBlogs.slice(0, blogReducerData.limit);
-        dispatch({type: GET_BLOG_LIST, payload: blogList});
+        let blogList = blogReducerData.lStorageBlogs.slice(0, blogReducerData.limit);
+
+        const authorCategoryList = getAuthorCategoryList(blogReducerData.lStorageBlogs);
+
+        dispatch({type: GET_BLOG_LIST,
+            payload: {blogList: blogList, authorList: authorCategoryList.authorList, categoryList: authorCategoryList.categoryList}});
     }
 }
 
@@ -83,7 +91,6 @@ export const getSelectedBlog = (id) => {
                 selectedBlog = blogReducerData.lStorageBlogs[i];
             }
         }
-        console.log(selectedBlog);
         dispatch({type: GET_SELECTED_BLOG, payload: selectedBlog});
     }
 }
