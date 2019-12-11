@@ -37,8 +37,6 @@ const getAuthorCategoryList = (blogReducerData) => {
             }
 
             return 0;
-            // console.log(obj1[blogReducerData.sortBy]>obj2[blogReducerData.sortBy]);
-            // return obj1[blogReducerData.sortBy] > obj2[blogReducerData.sortBy]
         });
     }
 
