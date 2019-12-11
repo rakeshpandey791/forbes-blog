@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import { withRouter } from "react-router-dom";
 import {connect} from "react-redux";
 import {Redirect} from 'react-router-dom';
-import {getBlogList, updateLimit, likeBlog, filterByAuthor, filterByCategory} from "../store/action/blogAction";
+import {getBlogList, updateLimit, likeBlog, filterByAuthor, filterByCategory, sortBy} from "../store/action/blogAction";
 
 class BlogList extends Component {
     constructor() {
@@ -54,7 +54,14 @@ class BlogList extends Component {
                                     }
                                 </select>
                             </div>
-                            {/*<div>Sort by</div>*/}
+                            <div className="pt-5">
+                                <select onChange={this.props.sortBy}>
+                                    <option value="">Sort By</option>
+                                    <option value="author">Author</option>
+                                    <option value="category">Category</option>
+
+                                </select>
+                            </div>
 
                         </div>
 
@@ -132,6 +139,7 @@ const mapActionToDispatch = (dispatch) => {
         likeBlog: (id) => dispatch(likeBlog(id)),
         filterByAuthor: (event) => dispatch(filterByAuthor(event)),
         filterByCategory: (event) => dispatch(filterByCategory(event)),
+        sortBy: (event) => dispatch(sortBy(event)),
     }
 }
 

@@ -1,5 +1,5 @@
 import {GET_BLOG_LIST, UPDATE_LIMIT, UPDATE_TOTAL_BLOG_COUNT, GET_SELECTED_BLOG,
-    SET_AUTHOR_FILTER, SET_CATEGORY_FILTER} from "../actionConstant";
+    SET_AUTHOR_FILTER, SET_CATEGORY_FILTER, SET_SORT_BY} from "../actionConstant";
 
 const initialState = {
     blogList: [],
@@ -10,7 +10,8 @@ const initialState = {
     selectedCategory: '',
     limit: 4,
     totalBlogs: 0,
-    lStorageBlogs: JSON.parse(localStorage.getItem('blogList'))
+    lStorageBlogs: JSON.parse(localStorage.getItem('blogList')),
+    sortBy: ''
 };
 
 const blogReducer = (state = initialState, action) => {
@@ -28,6 +29,7 @@ const blogReducer = (state = initialState, action) => {
                 blogList: action.payload.blogList,
                 authorList: action.payload.authorList,
                 categoryList: action.payload.categoryList,
+                lStorageBlogs: JSON.parse(localStorage.getItem('blogList'))
 
             }
 
@@ -53,6 +55,12 @@ const blogReducer = (state = initialState, action) => {
             return {
                 ...state,
                 selectedCategory: action.payload
+            }
+
+        case SET_SORT_BY:
+            return {
+                ...state,
+                sortBy: action.payload
             }
 
         default:

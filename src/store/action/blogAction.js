@@ -1,13 +1,14 @@
 import {GET_BLOG_LIST, UPDATE_LIMIT, UPDATE_TOTAL_BLOG_COUNT,
-    GET_SELECTED_BLOG, SET_AUTHOR_FILTER, SET_CATEGORY_FILTER} from "../actionConstant";
+    GET_SELECTED_BLOG, SET_AUTHOR_FILTER, SET_CATEGORY_FILTER, SET_SORT_BY} from "../actionConstant";
 import blogs from './../blogs';
 
 const getAuthorCategoryList = (blogReducerData) => {
     const retObj = {
         authorList: [],
         categoryList: [],
-        blogList: blogReducerData.lStorageBlogs
+        blogList: blogReducerData.lStorageBlogs ? blogReducerData.lStorageBlogs : blogs
     }
+
     for(let i=0; i<retObj.blogList.length; i++) {
         if (retObj.authorList.indexOf(retObj.blogList[i].author) < 0) {
             retObj.authorList.push(retObj.blogList[i].author);
@@ -25,7 +26,24 @@ const getAuthorCategoryList = (blogReducerData) => {
     if (blogReducerData.selectedCategory) {
         retObj.blogList = retObj.blogList.filter(obj => obj.category === blogReducerData.selectedCategory);
     }
+
+    if (blogReducerData.sortBy) {
+        retObj.blogList.sort((obj1, obj2) => {
+            console.log(obj1[blogReducerData.sortBy]>obj2[blogReducerData.sortBy]);
+            if (obj1[blogReducerData.sortBy] > obj2[blogReducerData.sortBy]) {
+                return 1;
+            } else {
+                return -1;
+            }
+
+            return 0;
+            // console.log(obj1[blogReducerData.sortBy]>obj2[blogReducerData.sortBy]);
+            // return obj1[blogReducerData.sortBy] > obj2[blogReducerData.sortBy]
+        });
+    }
+
     retObj.blogList = retObj.blogList.slice(0, blogReducerData.limit);
+
 
     return retObj;
 }
@@ -44,12 +62,13 @@ export const getBlogList = (id) => {
             localStorage.setItem('blogList', JSON.stringify(dataToUpdateLocalStorage));
         }
         const blogReducerData = getState().blogReducer;
-        dispatch({type: UPDATE_TOTAL_BLOG_COUNT, payload: blogReducerData.lStorageBlogs.length});
+
 
         const authorCategoryList = getAuthorCategoryList(blogReducerData);
 
         dispatch({type: GET_BLOG_LIST,
             payload: {blogList: authorCategoryList.blogList, authorList: authorCategoryList.authorList, categoryList: authorCategoryList.categoryList}});
+        dispatch({type: UPDATE_TOTAL_BLOG_COUNT, payload: blogs.length});
     }
 }
 
@@ -73,16 +92,25 @@ export const filterByCategory = (event) => {
     }
 }
 
+export const sortBy = (event) => {
+    return (dispatch, getState) => {
+        dispatch({type: SET_SORT_BY, payload: event.target.value});
+        const blogReducerData = getState().blogReducer;
+        const authorCategoryList = getAuthorCategoryList(blogReducerData);
+        dispatch({type: GET_BLOG_LIST,
+            payload: {blogList: authorCategoryList.blogList, authorList: authorCategoryList.authorList, categoryList: authorCategoryList.categoryList}});
+    }
+}
+
 export const updateLimit = (id) => {
     return (dispatch, getState) => {
         dispatch({type: UPDATE_LIMIT});
         const blogReducerData = getState().blogReducer;
-        let blogList = blogReducerData.lStorageBlogs.slice(0, getState().blogReducer.limit);
 
         const authorCategoryList = getAuthorCategoryList(blogReducerData);
 
         dispatch({type: GET_BLOG_LIST,
-            payload: {blogList: blogList, authorList: authorCategoryList.authorList, categoryList: authorCategoryList.categoryList}});
+            payload: {blogList: authorCategoryList.blogList, authorList: authorCategoryList.authorList, categoryList: authorCategoryList.categoryList}});
     }
 }
 
